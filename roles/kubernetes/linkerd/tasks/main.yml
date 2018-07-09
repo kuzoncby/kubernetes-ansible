@@ -1,0 +1,22 @@
+---
+
+- name: 'Create linkerd Namespace'
+  shell: kubectl create ns linkerd
+
+- name: "Copy Service Mesh"
+  template:
+    src: '{{ item }}'
+    dest: '/tmp/{{ item }}'
+  with_items:
+    - servicemesh.yaml
+  tags:
+    - servicemesh
+
+- name: "Apply Service Mesh"
+  shell: "kubectl apply -f /tmp/{{ item }}"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  with_items:
+    - servicemesh.yaml
+  tags:
+    - servicemesh

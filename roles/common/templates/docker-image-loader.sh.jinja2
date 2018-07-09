@@ -1,0 +1,8 @@
+{% for image in docker_images %}
+    docker pull {{ origin_registry }}/{{ image }}
+    docker tag  {{ origin_registry }}/{{ image }} {{ target_registry }}/{{ image }}
+    docker tag  {{ origin_registry }}/{{ image }} {{ special_registry }}/{{ image }}
+{% endfor %}
+
+docker pull {{ origin_registry }}/coreos/flannel:v0.10.0-amd64
+docker tag {{ origin_registry }}/coreos/flannel:v0.10.0-amd64 quay.io/coreos/flannel:v0.10.0-amd64

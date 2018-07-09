@@ -1,0 +1,29 @@
+---
+
+- name: "Copy {{ item }}"
+  template:
+    src: '{{ item }}'
+    dest: '/tmp/{{ item }}'
+  with_items:
+    - auth-delegator.yaml
+    - auth-reader.yaml
+    - metrics-apiservice.yaml
+    - metrics-server-deployment.yaml
+    - metrics-server-service.yaml
+    - resource-reader.yaml
+  tags:
+    - metrics
+
+- name: "Apply {{ item }}"
+  shell: "kubectl apply -f /tmp/{{ item }}"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  with_items:
+    - auth-delegator.yaml
+    - auth-reader.yaml
+    - metrics-apiservice.yaml
+    - metrics-server-deployment.yaml
+    - metrics-server-service.yaml
+    - resource-reader.yaml
+  tags:
+    - metrics

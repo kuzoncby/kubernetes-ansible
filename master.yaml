@@ -1,0 +1,12 @@
+- hosts: masters
+  gather_facts: yes
+  become: yes
+  roles:
+  - { role: kubernetes/master, tags: master }
+  - { role: cni, tags: cni }
+
+- hosts: nodes
+  gather_facts: yes
+  become: yes
+  roles:
+  - { role: kubernetes/node, tags: node }

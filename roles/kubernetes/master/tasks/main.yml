@@ -1,0 +1,62 @@
+---
+
+- name: Init Kubernetes cluster
+  shell: |
+    kubeadm init --service-cidr {{ service_cidr }} \
+                 --kubernetes-version {{ kube_version }} \
+                 --pod-network-cidr {{ pod_network_cidr }} \
+                 --token {{ token }} \
+                 --apiserver-advertise-address {{ groups['masters'][0] }} \
+                 {{ kubeadm_opts }} \
+                 {{ init_opts }} > /tmp/kubeadm-master.log
+  register: init_cluster
+
+- name: Create Kubernetes config directory
+  become: false
+  file: path="~/.kube/" state=directory
+
+- name: Change permissions of .kube/config
+  file: path=/etc/kubernetes/admin.conf mode=0775
+
+- name: Copy admin.conf to Home directory
+  when: init_cluster and ansible_user is defined
+  become: false
+  copy:
+    src: "{{ kubeadmin_config }}"
+    dest: "~/.kube/config"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: 0755
+    remote_src: True
+
+- name: Enable and restart kubelet engine
+  systemd:
+    name: kubelet
+    daemon_reload: yes
+    state: restarted
+    enabled: yes
+  notify:
+  - "Deploy kubernetes dashboard into cluster"
+  register: started_kubelet
+
+- name: "Copy traefik-{{ item }}.yaml"
+  template:
+    src: 'traefik-{{ item }}.yaml.j2'
+    dest: '/tmp/traefik-{{ item }}.yaml'
+  with_items:
+    - rbac
+    - ds
+    - ui
+  tags:
+    - traefik
+
+- name: "Apply traefik-{{ item }}.yaml"
+  shell: "kubectl apply -f /tmp/traefik-{{ item }}.yaml"
+  delegate_to: "{{ groups['masters'][0] }}"
+  run_once: true
+  with_items:
+    - rbac
+    - ds
+    - ui
+  tags:
+    - traefik

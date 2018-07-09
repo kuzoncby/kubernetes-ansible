@@ -1,0 +1,23 @@
+# /etc/sysconfig/docker
+
+# Modify these options if you want to change the way the docker daemon runs
+OPTIONS='--selinux-enabled --log-driver=journald --signature-verification=false  -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'
+if [ -z "${DOCKER_CERT_PATH}" ]; then
+DOCKER_CERT_PATH=/etc/docker
+fi
+
+# Do not add registries in this file anymore. Use /etc/containers/registries.conf
+# from the atomic-registries package.
+#
+
+# docker-latest daemon can be used by starting the docker-latest unitfile.
+# To use docker-latest client, uncomment below lines
+#DOCKERBINARY=/usr/bin/docker-latest
+#DOCKERDBINARY=/usr/bin/dockerd-latest
+#DOCKER_CONTAINERD_BINARY=/usr/bin/docker-containerd-latest
+#DOCKER_CONTAINERD_SHIM_BINARY=/usr/bin/docker-containerd-shim-latest
+ADD_REGISTRY='--add-registry {{ origin_registry }} --add-registry {{ target_registry }}'
+BLOCK_REGISTRY='--block-registry public --block-registry gcr.io --block-registry k8s.gcr.io'
+INSECURE_REGISTRY='--insecure-registry {{ origin_registry }} --insecure-registry {{ target_registry }}'
+#HTTP_PROXY='http://192.168.1.50:1080'
+#NO_PROXY='cluster.local,192.168.0.0'

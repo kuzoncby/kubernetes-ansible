@@ -1,0 +1,8 @@
+---
+# before role
+
+- hosts:
+    - masters
+    - nodes
+  roles:
+    - { role: kubernetes/reset }

@@ -1,0 +1,80 @@
+- name: Setup Full Hostname
+  hostname:
+    name: '{{ inventory_hostname }}'
+
+- name: Disable SELinux
+  selinux:
+    policy: targeted
+    state: permissive
+
+- name: Disable firewalld
+  systemd:
+    name: firewalld
+    state: stopped
+    enabled: no
+
+- name: Remove swapfile from /etc/fstab
+  mount:
+    name: swap
+    fstype: swap
+    state: absent
+
+- name: Disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+
+- name: Render Kubernetes Repository
+  template: src=kubernetes.repo.jinja2 dest=/etc/yum.repos.d/kubernetes.repo
+
+- name: Install Docker and kubeadm
+  yum:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+  - docker
+  - kubeadm
+  - python-pip
+
+- name: Render Docker Config
+  template: src=docker.jinja2 dest=/etc/sysconfig/docker
+
+- name: Restart Docker Service
+  service:
+    name: docker
+    state: restarted
+    enabled: yes
+
+- name: Install Docker Python
+  pip:
+    name: docker-py
+    extra_args: '{{ pypi_mirror.args }}'
+
+- name: Render Kubernetes images
+  template:
+    src: docker-image-loader.sh.jinja2
+    dest: /opt/docker-image-loader.sh
+    mode: '0755'
+  tags:
+  - images
+
+- name: Pull Kubernetes
+  shell: /opt/docker-image-loader.sh
+  tags:
+  - images
+
+- name: Enable kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes
+  tags:
+  - kubelet
+
+- name: Disable swappiness and pass bridged IPv4 traffic to iptable's chains
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+  - { name: 'vm.swappiness', value: '0' }
+  - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
