@@ -10,3 +10,9 @@
   become: yes
   roles:
   - { role: kubernetes/node, tags: node }
+
+- hosts: glusterfs
+  gather_facts: yes
+  become: yes
+  roles:
+  - { role: kubernetes/heketi, tags: heketi }

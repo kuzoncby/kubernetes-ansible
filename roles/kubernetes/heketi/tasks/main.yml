@@ -1,0 +1,44 @@
+---
+
+- name: Add the dm_thin_pool module
+  modprobe:
+    name: dm_thin_pool
+    state: present
+
+- name: Install GlusterFS release
+  yum:
+    name: centos-release-gluster40
+    state: latest
+
+- name: Config yum address
+  shell: "sed -i 's/mirror.centos.org/{{ centos_yum_mirror }}/g' /etc/yum.repos.d/*"
+
+- name: Install GlusterFS packages
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+  - libsemanage-python
+  - glusterfs-fuse
+
+#- name: Download and unarchive heketi client
+#  unarchive:
+#    src: https://github.com/heketi/heketi/releases/download/v7.0.0/heketi-client-v7.0.0.linux.amd64.tar.gz
+#    dest: /tmp
+#    remote_src: yes
+#
+#- name: Setup heketi client
+#  copy:
+#    src: /tmp/heketi-client/bin/heketi-cli
+#    dest: /bin/heketi-cli
+#
+#- name: "Setup {{ item }}"
+#  template:
+#    src: "{{ item }}.jinja2"
+#    dest: "/tmp/{{ item }}"
+#  with_items:
+#  - glusterfs-daemonset.json
+#  - heketi-service-account.json
+#  - heketi.json
+#  - heketi-bootstrap.json
+#  - deploy-heketi.sh
