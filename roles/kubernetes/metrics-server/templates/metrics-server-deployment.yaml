@@ -25,7 +25,7 @@ spec:
       serviceAccountName: metrics-server
       containers:
       - name: metrics-server
-        image: {{ origin_registry }}/google_containers/metrics-server-amd64:v0.2.1
+        image: google_containers/metrics-server-amd64:v0.2.1
         imagePullPolicy: Always
         command:
         - /metrics-server
