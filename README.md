@@ -8,7 +8,7 @@ Recommend five machines to install Kubernetes.
 
 Edit [production.ini](./production.ini) and [all.yaml](./group_vars/all.yaml)
 
-## Prepare Virtualbox and Vagrant (Microsoft Windows 10 Pro) - WIP
+## Prepare Virtualbox and Vagrant (Microsoft Windows 10 Pro)
 
 Install [Chocolatey](https://chocolatey.org/install) with PowerShell.exe.
 
@@ -32,9 +32,13 @@ vagrant box add centos/7 --provider=virtualbox
 vagrant up
 ```
 
+![VB Manager](vbmanager.png)
+
+It's gonna take a long time to boot these virtual machines, recommended to do this in the SSD disk.
+
 ## Install Kubernetes
 
-**Install DNS and pull images**
+**Install DNS and pull images - WIP**
 
 ```bash
 make prepare
