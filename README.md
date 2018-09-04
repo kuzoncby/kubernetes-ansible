@@ -1,20 +1,60 @@
 # Install Kubernetes by Ansible
 
+Recommend five machines to install Kubernetes.
+
+- One DNS and Docker Registry
+- Four Kubernetes nodes
+- One node as master node
+
 Edit [production.ini](./production.ini) and [all.yaml](./group_vars/all.yaml)
 
-## Test connection
+## Prepare Virtualbox and Vagrant (Microsoft Windows 10 Pro) - WIP
+
+Install [Chocolatey](https://chocolatey.org/install) with PowerShell.exe.
+
+```powershell
+Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+```
+
+Then, install [Oracle VM VirtualBox](https://chocolatey.org/packages/virtualbox)and [Vagrant by HashiCorp](https://chocolatey.org/packages/vagrant)
+
+```powershell
+choco install virtualbox
+choco install vagrant
+```
+
+Reboot your Windows.
+
+Launch virtual machines.
+
+```bash
+vagrant box add centos/7 --provider=virtualbox
+vagrant up
+```
+
+## Install Kubernetes
+
+**Install DNS and pull images**
+
+```bash
+make prepare
+```
+
+It will set up Ansible, Docker Registry and PowerDNS with MariaDB 10.
+
+**Test connection**
 
 ```bash
 make test
 ```
 
-## Install
+**Install**
 
 ```bash
 make install
 ```
 
-## Reset
+**Reset**
 
 ```bash
 make reset
