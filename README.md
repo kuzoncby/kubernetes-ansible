@@ -10,13 +10,13 @@ Edit [production.ini](./production.ini) and [all.yaml](./group_vars/all.yaml)
 
 ## Prepare Virtualbox and Vagrant (Microsoft Windows 10 Pro)
 
-Install [Chocolatey](https://chocolatey.org/install) with PowerShell.exe.
+Install [Chocolatey](https://chocolatey.org/install) with **PowerShell.exe**.
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 ```
 
-Then, install [Oracle VM VirtualBox](https://chocolatey.org/packages/virtualbox)and [Vagrant by HashiCorp](https://chocolatey.org/packages/vagrant)
+Then, install [Oracle VM VirtualBox](https://chocolatey.org/packages/virtualbox) and [Vagrant by HashiCorp](https://chocolatey.org/packages/vagrant)
 
 ```powershell
 choco install virtualbox
@@ -27,7 +27,7 @@ Reboot your Windows.
 
 Launch virtual machines.
 
-```bash
+```powershell
 vagrant box add centos/7 --provider=virtualbox
 vagrant up
 ```
@@ -40,7 +40,17 @@ It's gonna take a long time to boot these virtual machines, recommended to do th
 
 **Install DNS and pull images - WIP**
 
+Continue with your PowerShell:
+
+```powershell
+vagrant ssh registry
+```
+
+Then you log in to the virtual machine via SSH.
+
 ```bash
+sudo su -
+cd /vagrant/
 make prepare
 ```
 
